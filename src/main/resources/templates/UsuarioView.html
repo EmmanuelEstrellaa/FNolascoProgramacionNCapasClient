@@ -1,0 +1,57 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultra.net.nz/thyemeleaf/layout"
+      layout:decorate = ~{layout}>
+
+
+</head>
+<body layout:fragment = "body">
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <img th:src="${usuarioDirecciones.Usuario.Imagen != null} ? 'data:image/png;base64,' + ${usuarioDirecciones.Usuario.Imagen} : 'https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png'"
+                         style="max-height: 150px; object-fit: contain" class="card-img-top" alt="Imagen del usuario">                        
+                    <div class="card-body">
+                        <center><h3 th:text="|${usuarioDirecciones.Usuario.Nombre} ${usuarioDirecciones.Usuario.ApellidoPaterno} ${usuarioDirecciones.Usuario.ApellidoMaterno}|"></h3></b></center>
+                        <p class="card-text" th:text="|Usuario: ${usuarioDirecciones.Usuario.UserName}|"></p>
+                        <p class="card-text" th:text="|Email: ${usuarioDirecciones.Usuario.Email}|"></p>                            
+                        <a class="btn btn-light col-12" th:href="@{/Usuario/formEditable?IdUsuario=}+${usuarioDirecciones.Usuario.IdUsuario}">Editar Información</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+
+                        <h5 class="card-title">Direcciones Asignadas</h5>
+
+
+                        <a class="btn btn-light col-12" th:href="@{/Usuario/formEditable?IdUsuario=}+${usuarioDirecciones.Usuario.IdUsuario}+'&IdDireccion=0'">Agregar Dirección</a>
+
+                        <br/><br/>
+
+                        <table class="table table-responsive table-bordered table-light table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Dirección</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="direccion : ${usuarioDirecciones.Direcciones}">
+                                    <td th:text="|${direccion.Calle}, ${direccion.NumeroExterior}, ${direccion.Colonia.Nombre}|"></td>
+                                    <td>
+                                        <a class="btn btn-dark btn-sm" th:href="@{/Usuario/formEditable?IdUsuario=}+${usuarioDirecciones.Usuario.IdUsuario}+'&IdDireccion='+${direccion.IdDireccion}"><i class="bi bi-pencil-square"></i></a>
+                                        <a class="btn btn-danger btn-sm" th:href="@{/Usuario/Delete?IdDireccion=}+${direccion.IdDireccion}"><i class="bi bi-trash3"></i></a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

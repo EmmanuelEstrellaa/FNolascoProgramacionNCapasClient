@@ -1,0 +1,67 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultra.net.nz/thyemeleaf/layout"
+      layout:decorate = ~{layout}>
+
+    <body layout:fragment = "body">
+        <div class="row">
+            <div class="col">
+                <input type="text" class="form-control" placeholder="Nombre(s)" aria-label="First name">
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" placeholder="Apellido Paterno" aria-label="Last name">
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" placeholder="Apellido Materno" aria-label="Last name">
+            </div>
+            <div class="col">
+                <select id="roll" class="form-select"> th:field="*{Usuario.Roll.IdRoll}" 
+                    <option value=0 selected>Selecciona tu roll en la empresa</option>
+                    <option th:each="roll : ${rolls}" th:value="${roll.IdRoll}" th:text="${roll.Nombre}">One</option>
+                </select>
+            </div>
+            <div class="col">
+                <a class="btn btn-light"><i class="bi bi-search"></i> Buscar</a>
+            </div>
+
+        </div>
+        <br>
+
+
+        <div class="container">
+            <center><a class="btn btn-light" th:href="@{/Usuario/Form/0}" ><i class="bi bi-person-add"></i> Agregar usuario</a></center>
+            <table class="table">
+                <thead class="table-dark">
+                    <tr> 
+                        <th class="col-1">Editar</th>
+                        <th class="col-1">Foto</th>
+                        <th class="col-3"><center>Nombre</center></th>
+                <th class="col-2"><center>Username</center></th>
+                <th class="col-2"><center>Contacto</center></th>
+                <th class="col-3"><center>Direcciones</center></th>
+                <th class="col-3"><center>Status</center></th>
+                <th class="col-1"><center>Eliminar</center></th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="usuarioDirecciones : ${listaUsuarios}">
+                        <td><a class="btn btn-light" th:href="@{/Usuario/Form/{IdUsuario}(IdUsuario = ${usuarioDirecciones.Usuario.IdUsuario})}"><i class="bi bi-pencil-square"></i> </a></td>
+                        <td><img style="max-width: 75px" th:src="${usuarioDirecciones.Usuario.Imagen != null} ?
+                                 'data:image/png;base64,' + ${usuarioDirecciones.Usuario.Imagen} :
+                                 'https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png'" /></td>
+                        <td th:text="|${usuarioDirecciones.Usuario.Nombre} ${usuarioDirecciones.Usuario.ApellidoPaterno} ${usuarioDirecciones.Usuario.ApellidoMaterno}|"></td>
+                        <td th:text="${usuarioDirecciones.Usuario.UserName}"></td>
+                        <td th:text="${usuarioDirecciones.Usuario.Telefono}"></td>
+                        <td><ul><li th:each="direccion : ${usuarioDirecciones.Direcciones}" th:text="|${direccion.Calle} ${direccion.NumeroInterior} ${direccion.NumeroExterior}, ${direccion.Colonia.Nombre}|"></li></ul></td>
+                        <td>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
+                                <label class="form-check-label" for="switchCheckDefault"> </label>
+                            </div>
+                        </td>
+                        <td><a class="btn btn-light" th:href="@{/Usuario/DeleteUsuario/{IdUsuario}(IdUsuario = ${usuarioDirecciones.Usuario.IdUsuario})}"><i class="bi bi-trash3"></i> </a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>
