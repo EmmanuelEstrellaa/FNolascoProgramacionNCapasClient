@@ -56,10 +56,10 @@ public class UserController {
         try {
             RestTemplate restTemplate = new RestTemplate();
 
-            ResponseEntity<Result> responseEntity = restTemplate.exchange("http://localhost:8081/usuarioapi",
+            ResponseEntity<Result<UsuarioDireccion>> responseEntity = restTemplate.exchange("http://localhost:8081/usuarioapi",
                     HttpMethod.GET,
                     HttpEntity.EMPTY,
-                    new ParameterizedTypeReference<Result>() {
+                    new ParameterizedTypeReference<Result<UsuarioDireccion>>() {
             });
 
             Result response = responseEntity.getBody();
