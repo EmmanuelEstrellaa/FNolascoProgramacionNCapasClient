@@ -152,7 +152,7 @@ public class UserController {
 //            ResponseEntity<UsuarioDireccion> response = restTemplate.exchange(urlBase + "usuarioapi/getbyid/" + IdUsuario,
 //                    HttpMethod.GET,
 //                    HttpEntity.EMPTY,
-//                    new  = ParameterizedTypeReference <> ()  {
+//                    new  = ParameterizedTypeReference<Result<UsuarioDireccion>>(){
 //                    });
 
             usuarioDireccion.Direccion = new Direccion();
