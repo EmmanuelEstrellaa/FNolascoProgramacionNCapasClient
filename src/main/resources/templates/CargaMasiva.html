@@ -33,79 +33,84 @@
                             <br>
                         </form>
                     </div>
-                    </center>
+                </center>
 
-                        <center>
-                            <div th:if="${listaErrores!= null}">
-                                <div th:if="${listaErrores.isEmpty()}">
-                                    <h2 >Archivo correcto: </h2>
-                                    <a th:href="@{/Usuario/CargaMasiva/procesar}" class="btn btn-success">Procesar archivo</a>
-                                </div>
-                                <div th:unless="${listaErrores.isEmpty()}">
-                                    <h1 style="color: red">Archivo incorrecto: </h1>
-                                    <table class="table table-responsive table-bordered">
-                                        <thead class="table-dark">
-                                        <th class="col-2">Linea</th>
-                                        <th>Texto</th>
-                                        <th>Error</th>
-                                        </thead>
-                                        <tbody>
-                                            <tr th:each="error :${listaErrores}">
-                                                <td th:text="${error.fila}"></td> 
-                                                <td th:text="${error.mensaje}"></td> 
-                                                <td th:text="${error.descripcion}"></td> 
-                                            </tr>
-                                        </tbody>
-                                    </table>
-
-                                </div>
-                            </div>
-                        </center>
-                        </div>            
+                <center>
+                    <div th:if="${correcto == null}">
+                        <div th:if="${!(listaErrores == null) && !listaErrores.isEmpty()}">
+                            <h2 >Archivo correcto: </h2>
+                            <!--<a th:href="@{/Usuario/CargaMasiva/procesar}" class="btn btn-success">Procesar archivo</a>-->
                         </div>
-                        <script>
-                            function mostrarFormulario() {
-                                document.getElementById("mostrarFormulario").style.display = "none";
-                                document.getElementById("botones").style.display = "block";
-                            }
+                        <div th:unless="${listaErrores.isEmpty()}">
+                            <h1 style="color: red">Archivo incorrecto: </h1>
+                            <table class="table table-responsive table-bordered">
+                                <thead class="table-dark">
+                                <th class="col-2">Linea</th>
+                                <th>Texto</th>
+                                <th>Error</th>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="error :${listaErrores}">
+                                        <td th:text="${error.fila}"></td> 
+                                        <td th:text="${error.mensaje}"></td> 
+                                        <td th:text="${error.descripcion}"></td> 
+                                    </tr>
+                                </tbody>
+                            </table>
 
-                            let tipoArchivo = "";
+                        </div>
+                    </div>
 
-                            document.getElementById('excel').addEventListener('click', function () {
-                                tipoArchivo = "xlsx";
-                                document.getElementById("archivo").setAttribute("accept", ".xlsx");
+                    <div th:unless="${correcto == null}">
+                        <h4>Archivo correcto: </h4>
+                        <a th:href="@{/Usuario/CargaMasiva/Procesar}" class="btn btn-success">Procesar archivo</a>
+                    </div>
+                </center>
+            </div>            
+        </div>
+        <script>
+            function mostrarFormulario() {
+                document.getElementById("mostrarFormulario").style.display = "none";
+                document.getElementById("botones").style.display = "block";
+            }
 
+            let tipoArchivo = "";
 
-                                document.getElementById('archivo').style.background = 'green';
-                                document.getElementById('cargaMasiva').style.background = 'green';
-                                document.getElementById("formularioArchivo").style.display = "block";
-
-                            });
-
-
-                            document.getElementById('txt').addEventListener('click', function () {
-                                tipoArchivo = "txt";
-                                document.getElementById("archivo").setAttribute("accept", ".txt");
-
-                                document.getElementById('archivo').style.background = 'gray';
-                                document.getElementById('cargaMasiva').style.background = 'gray';
-                                document.getElementById("formularioArchivo").style.display = "block";
-
-                            });
+            document.getElementById('excel').addEventListener('click', function () {
+                tipoArchivo = "xlsx";
+                document.getElementById("archivo").setAttribute("accept", ".xlsx");
 
 
-                            document.getElementById("archivo").addEventListener("change", function () {
-                                if (this.files.length > 0) {
-                                    var fileName = this.files[0].name;
-                                    var fileExtension = fileName.split('.').pop().toLowerCase();
+                document.getElementById('archivo').style.background = 'green';
+                document.getElementById('cargaMasiva').style.background = 'green';
+                document.getElementById("formularioArchivo").style.display = "block";
 
-                                    if (fileExtension !== tipoArchivo) {
-                                        alert("Por favor, seleccione un archivo " + tipoArchivo.toUpperCase() + " válido.");
-                                        this.value = "";
-                                    }
-                                }
-                            });
+            });
 
-                        </script>
-                        </body>
-                        </html>
+
+            document.getElementById('txt').addEventListener('click', function () {
+                tipoArchivo = "txt";
+                document.getElementById("archivo").setAttribute("accept", ".txt");
+
+                document.getElementById('archivo').style.background = 'gray';
+                document.getElementById('cargaMasiva').style.background = 'gray';
+                document.getElementById("formularioArchivo").style.display = "block";
+
+            });
+
+
+            document.getElementById("archivo").addEventListener("change", function () {
+                if (this.files.length > 0) {
+                    var fileName = this.files[0].name;
+                    var fileExtension = fileName.split('.').pop().toLowerCase();
+
+                    if (fileExtension !== tipoArchivo) {
+                        alert("Por favor, seleccione un archivo " + tipoArchivo.toUpperCase() + " válido.");
+                        this.value = "";
+                    }
+                }
+            });
+
+        </script>
+    </body>
+</html>

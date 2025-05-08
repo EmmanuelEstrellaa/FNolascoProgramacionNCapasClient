@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -257,7 +258,13 @@ public class UserController {
             if (archivo != null && !archivo.isEmpty()) {
 
                 //Body
-                ByteArrayResource byteArrayResource = new ByteArrayResource(archivo.getBytes());
+                ByteArrayResource byteArrayResource = new ByteArrayResource(archivo.getBytes()) {
+                    @Override
+                    public String getFilename() {
+                        return archivo.getOriginalFilename();
+                    }
+                };
+
                 MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
                 body.add("archivo", byteArrayResource);
 
@@ -268,31 +275,50 @@ public class UserController {
                 //Entidad de la peticion
                 HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity(body, httpHeaders);
 
-                ResponseEntity<ResultFile> responseEntity = restTemplate.exchange(urlBase + "/usuarioapi/CargaMasiva",
+                ResponseEntity<Map<String, Object>> responseEntity = restTemplate.exchange(
+                        urlBase + "/usuarioapi/CargaMasiva",
                         HttpMethod.POST,
                         httpEntity,
-                        new ParameterizedTypeReference<ResultFile>() {
+                        new ParameterizedTypeReference<Map<String, Object>>() {
                 });
-            }
 
-//                if (listaErrores.isEmpty()) {
-//                    //Proceso mi archivo
-//                    session.setAttribute("urlFile", absolutePath);
-//                    model.addAttribute("listaErrores", listaErrores);
-//                } else {
-//                    //Mando mis errores
-//                    model.addAttribute("listaErrores", listaErrores);
-//                }
+                if (responseEntity.getStatusCode().is2xxSuccessful()) {
+                    model.addAttribute("correcto", true);
+                    session.setAttribute("urlFile", responseEntity.getBody().get("object"));
+
+                } else {
+                    if (responseEntity.getStatusCode().is4xxClientError()) {
+                        model.addAttribute("listaErrores", (String) responseEntity.getBody().get("objects"));
+                    }
+                }
+
+            }
         } catch (Exception ex) {
             return "redirect:/Usuario/CargaMasiva";
         }
         return "CargaMasiva";
     }
 
-//    @PostMapping("CargaMasiva/procesar")
-//    public String Procesar(@RequestParam MultipartFile archivo, Model model, HttpSession session) {
-//        
-//        
-//        return "/CargaMasiva";
-//    }
+    @PostMapping("CargaMasiva/Procesar")
+    public String Procesar(HttpSession session) {
+
+        String absolutePath = session.getAttribute("urlFile").toString();
+
+        ResponseEntity<Result> responseEntity = restTemplate.exchange(
+                urlBase + "usuarioapi/CargaMasiva/Procesar",
+                HttpMethod.POST,
+                new HttpEntity<>(absolutePath),
+                new ParameterizedTypeReference<Result>() {
+        });
+
+        if (responseEntity.getBody().correct) {
+
+        }
+
+        if (responseEntity.getStatusCode().equals(200)) {
+
+        }
+
+        return "/CargaMasiva";
+    }
 }
