@@ -114,6 +114,16 @@ public class UserController {
         } else { // Editar
             System.out.println("Voy a editar");
 //            Result result = usuarioDAOImplementation.UsuarioDireccionesById(IdUsuario);
+
+            //Este es un ResponseEntity de un Result que recibe UsuarioDireccion, necesita algo más
+            ResponseEntity<Result<UsuarioDireccion>> response = restTemplate.exchange(urlBase + "usuarioapi/getbyid/" + IdUsuario,
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Result<UsuarioDireccion>>() {
+            });
+
+            model.addAttribute("usuarioDirecciones", response.getBody().object);
+
 //            model.addAttribute("usuarioDirecciones", result.object);
             return "UsuarioView";
         }
@@ -145,19 +155,19 @@ public class UserController {
 
     @GetMapping("/formEditable")
     public String FormEditable(Model model, @RequestParam int IdUsuario, @RequestParam(required = false) Integer IdDireccion) {
-
         if (IdDireccion == null) { //Editar Alumno
             UsuarioDireccion usuarioDireccion = new UsuarioDireccion();
-//            usuarioDireccion = (UsuarioDireccion) usuarioDAOImplementation.UsuarioDireccionesById(IdUsuario).object;
-//            ResponseEntity<UsuarioDireccion> response = restTemplate.exchange(urlBase + "usuarioapi/getbyid/" + IdUsuario,
-//                    HttpMethod.GET,
-//                    HttpEntity.EMPTY,
-//                    new  = ParameterizedTypeReference<Result<UsuarioDireccion>>(){
-//                    });
+            ResponseEntity<Usuario> response = restTemplate.exchange(urlBase + "usuarioapi/getbyid/" + IdUsuario,
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Usuario>() {
+            });
 
             usuarioDireccion.Direccion = new Direccion();
             usuarioDireccion.Direccion.setIdDireccion(-1);
-            model.addAttribute("usuarioDireccion", usuarioDireccion);
+
+            model.addAttribute("usuarioDirecciones", response.getBody());
+
 //            model.addAttribute("rolls", RollDAOImplementation.GetAllJPA().object);
         } else if (IdDireccion == 0) { //Agregar dirección
             UsuarioDireccion usuarioDireccion = new UsuarioDireccion();
