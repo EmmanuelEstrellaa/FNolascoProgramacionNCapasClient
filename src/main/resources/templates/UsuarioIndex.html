@@ -51,7 +51,7 @@
                         <td th:text="|${usuarioDirecciones.Usuario.Nombre} ${usuarioDirecciones.Usuario.ApellidoPaterno} ${usuarioDirecciones.Usuario.ApellidoMaterno}|"></td>
                         <td th:text="${usuarioDirecciones.Usuario.UserName}"></td>
                         <td th:text="${usuarioDirecciones.Usuario.Telefono}"></td>
-                        <td><ul><li th:each="direccion : ${usuarioDirecciones.Direcciones}" th:text="|${direccion.Calle} ${direccion.NumeroInterior} ${direccion.NumeroExterior}, ${direccion.Colonia.Nombre}|"></li></ul></td>
+                        <td><ul><li th:each="direccion : ${usuarioDirecciones.Direcciones}" th:text="|${direccion.Calle} ${direccion.NumeroInterior}, ${direccion.NumeroExterior}, ${direccion.Colonia.Nombre}|"></li></ul></td>
                         <td>
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">

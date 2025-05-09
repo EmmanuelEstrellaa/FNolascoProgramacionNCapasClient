@@ -113,9 +113,6 @@ public class UserController {
             model.addAttribute("usuarioDireccion", usuarioDIreccion);
             return "UsuarioForm";
         } else { // Editar
-            System.out.println("Voy a editar");
-//            Result result = usuarioDAOImplementation.UsuarioDireccionesById(IdUsuario);
-
             //Este es un ResponseEntity de un Result que recibe UsuarioDireccion, necesita algo más
             ResponseEntity<Result<UsuarioDireccion>> response = restTemplate.exchange(urlBase + "usuarioapi/getbyid/" + IdUsuario,
                     HttpMethod.GET,
@@ -124,18 +121,23 @@ public class UserController {
             });
 
             model.addAttribute("usuarioDirecciones", response.getBody().object);
-
-//            model.addAttribute("usuarioDirecciones", result.object);
             return "UsuarioView";
         }
 
     }
 
-//    @GetMapping("Delete")
-//    public String Delete(@RequestParam int IdDireccion) {
-//            usuarioDAOImplementation.DireccionDeleteJPA(IdDireccion);
-//        return "redirect:/Usuario";
-//    }
+    @GetMapping("Delete")
+    public String Delete(@RequestParam int IdDireccion) {
+
+        ResponseEntity<Result> responseEntity = restTemplate.exchange(urlBase + "usuarioapi/deleteDir/" + IdDireccion,
+                HttpMethod.DELETE,
+                HttpEntity.EMPTY,
+                new ParameterizedTypeReference<Result>() {
+        });
+        Result result = responseEntity.getBody();
+        return "redirect:/Usuario";
+    }
+
     @GetMapping("DeleteUsuario/{IdUsuario}")
     public String DeleteUsuario(@PathVariable int IdUsuario) {
         try {
@@ -158,16 +160,15 @@ public class UserController {
     public String FormEditable(Model model, @RequestParam int IdUsuario, @RequestParam(required = false) Integer IdDireccion) {
         if (IdDireccion == null) { //Editar Alumno
             UsuarioDireccion usuarioDireccion = new UsuarioDireccion();
-            ResponseEntity<Usuario> response = restTemplate.exchange(urlBase + "usuarioapi/getbyid/" + IdUsuario,
-                    HttpMethod.GET,
-                    HttpEntity.EMPTY,
-                    new ParameterizedTypeReference<Usuario>() {
-            });
-
             usuarioDireccion.Direccion = new Direccion();
             usuarioDireccion.Direccion.setIdDireccion(-1);
+            ResponseEntity<Result<Usuario>> response = restTemplate.exchange(urlBase + "usuarioapi/getbyid/" + IdUsuario,
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,   
+                    new ParameterizedTypeReference<Result<Usuario>>() {
+            });
 
-            model.addAttribute("usuarioDirecciones", response.getBody());
+            model.addAttribute("usuarioDireccion", response.getBody());
 
 //            model.addAttribute("rolls", RollDAOImplementation.GetAllJPA().object);
         } else if (IdDireccion == 0) { //Agregar dirección
@@ -176,9 +177,16 @@ public class UserController {
             usuarioDireccion.Usuario.setIdUsuario(IdUsuario);
             usuarioDireccion.Direccion = new Direccion();
             usuarioDireccion.Direccion.setIdDireccion(0);
+
+            ResponseEntity<Result<List<Pais>>> responsePais = restTemplate.exchange(urlBase + "paisapi",
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Result<List<Pais>>>() {
+            });
+
             model.addAttribute("usuarioDireccion", usuarioDireccion);
-//            model.addAttribute("paises", PaisDAOImplementation.GetAll().correct ? PaisDAOImplementation.GetAll().objects : null);
-//            model.addAttribute("paises", PaisDAOImplementation.GetAllJPA().correct ? PaisDAOImplementation.GetAllJPA().object : null);
+            model.addAttribute("paises", responsePais.getBody().object);
+
         } else { //Editar dirección
             UsuarioDireccion usuarioDireccion = new UsuarioDireccion();
             usuarioDireccion.Usuario = new Usuario();
@@ -233,13 +241,20 @@ public class UserController {
 //                usuarioDAOImplementation.UsuarioUpdateJPA(usuarioDireccion.Usuario);
                 System.out.println("Estoy actualizando un usuario");
             } else if (usuarioDireccion.Direccion.getIdDireccion() == 0) { //Agregar direccion
-//                usuarioDAOImplementation.UsuarioADDdireccion(usuarioDireccion);
-//                usuarioDAOImplementation.AddDireccionJPA(usuarioDireccion);
+
+                HttpEntity<UsuarioDireccion> entity = new HttpEntity(usuarioDireccion);
+                restTemplate.exchange(urlBase + "usuarioapi/AddDireccion",
+                        HttpMethod.POST,
+                        entity,
+                        new ParameterizedTypeReference<Result>() {
+                });
+
                 System.out.println("Estoy agregando direccion");
             } else { //Editar direccion
-                //usuarioDAOImplementation.DireccionUpdate(usuarioDireccion);
-//                usuarioDAOImplementation.DieccionUpdateJPA(usuarioDireccion);
-                System.out.println("Estoy actualizando direccion");
+                //                usuarioDAOImplementation.DieccionUpdateJPA(usuarioDireccion);
+
+//                HttpEntity<>
+
             }
         }
 
@@ -299,7 +314,7 @@ public class UserController {
         return "CargaMasiva";
     }
 
-    @PostMapping("CargaMasiva/Procesar")
+    @GetMapping("CargaMasiva/Procesar")
     public String Procesar(HttpSession session) {
 
         String absolutePath = session.getAttribute("urlFile").toString();

@@ -38,11 +38,7 @@
                 <center>
                     <div th:if="${correcto == null}">
                         <div th:if="${!(listaErrores == null) && !listaErrores.isEmpty()}">
-                            <h2 >Archivo correcto: </h2>
-                            <!--<a th:href="@{/Usuario/CargaMasiva/procesar}" class="btn btn-success">Procesar archivo</a>-->
-                        </div>
-                        <div th:unless="${listaErrores.isEmpty()}">
-                            <h1 style="color: red">Archivo incorrecto: </h1>
+                            <h4>Archivo incorrecto: </h4>
                             <table class="table table-responsive table-bordered">
                                 <thead class="table-dark">
                                 <th class="col-2">Linea</th>
@@ -51,13 +47,12 @@
                                 </thead>
                                 <tbody>
                                     <tr th:each="error :${listaErrores}">
-                                        <td th:text="${error.fila}"></td> 
-                                        <td th:text="${error.mensaje}"></td> 
-                                        <td th:text="${error.descripcion}"></td> 
+                                        <td th:text="${error.Fila}"></td> 
+                                        <td th:text="${error.Mensaje}"></td> 
+                                        <td th:text="${error.Descripcion}"></td> 
                                     </tr>
                                 </tbody>
                             </table>
-
                         </div>
                     </div>
 
