@@ -164,7 +164,7 @@ public class UserController {
             usuarioDireccion.Direccion.setIdDireccion(-1);
             ResponseEntity<Result<Usuario>> response = restTemplate.exchange(urlBase + "usuarioapi/getbyid/" + IdUsuario,
                     HttpMethod.GET,
-                    HttpEntity.EMPTY,   
+                    HttpEntity.EMPTY,
                     new ParameterizedTypeReference<Result<Usuario>>() {
             });
 
@@ -254,7 +254,6 @@ public class UserController {
                 //                usuarioDAOImplementation.DieccionUpdateJPA(usuarioDireccion);
 
 //                HttpEntity<>
-
             }
         }
 
@@ -335,5 +334,20 @@ public class UserController {
         }
 
         return "/CargaMasiva";
+    }
+
+    @PostMapping("/GetAllDinamico")
+    public String BusquedaDinamica(@ModelAttribute Usuario usuario, Model model) {
+
+        ResponseEntity<Result<List<Roll>>> response = restTemplate.exchange(urlBase + "rollapi",
+                HttpMethod.GET,
+                HttpEntity.EMPTY,
+                new ParameterizedTypeReference<Result<List<Roll>>>() {
+        });
+
+        model.addAttribute("roles", response.getBody().object);
+        model.addAttribute("usuarioBusqueda", usuario);
+
+        return "AlumnoIndex";
     }
 }

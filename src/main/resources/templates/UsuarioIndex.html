@@ -3,6 +3,8 @@
       layout:decorate = ~{layout}>
 
     <body layout:fragment = "body">
+        
+       <form th:action="@{/Usuario/GetAllDinamico}" method="post" th:object="${usuarioBusqueda}">
         <div class="row">
             <div class="col">
                 <input type="text" class="form-control" placeholder="Nombre(s)" aria-label="First name">
@@ -14,9 +16,9 @@
                 <input type="text" class="form-control" placeholder="Apellido Materno" aria-label="Last name">
             </div>
             <div class="col">
-                <select id="roll" class="form-select"> th:field="*{Usuario.Roll.IdRoll}" 
+                <select id="roll" class="form-select" th:field="*{Roll.IdRoll}">
                     <option value=0 selected>Selecciona tu roll en la empresa</option>
-                    <option th:each="roll : ${rolls}" th:value="${roll.IdRoll}" th:text="${roll.Nombre}">One</option>
+                    <option th:each="roll : ${roles}" th:value="${roll.IdRoll}" th:text="${roll.Nombre}">One</option>
                 </select>
             </div>
             <div class="col">
@@ -25,6 +27,7 @@
 
         </div>
         <br>
+        </form>
 
 
         <div class="container">
