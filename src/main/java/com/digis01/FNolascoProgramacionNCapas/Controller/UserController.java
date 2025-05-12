@@ -63,8 +63,6 @@ public class UserController {
     public String Index(Model model) {
         Result result = new Result();
         try {
-            RestTemplate restTemplate = new RestTemplate();
-
             ResponseEntity<Result<UsuarioDireccion>> responseEntity = restTemplate.exchange("http://localhost:8081/usuarioapi",
                     HttpMethod.GET,
                     HttpEntity.EMPTY,
@@ -73,7 +71,19 @@ public class UserController {
 
             Result response = responseEntity.getBody();
 
+            ResponseEntity<Result<List<Roll>>> responseRoll = restTemplate.exchange(urlBase + "rollapi",
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Result<List<Roll>>>() {
+            });
+
+            Usuario usuarioBusqueda = new Usuario();
+            usuarioBusqueda.Roll = new Roll();
+
+            model.addAttribute("roles", responseRoll.getBody().object);
             model.addAttribute("listaUsuarios", response.objects);
+            model.addAttribute("usuarioBusqueda", usuarioBusqueda);
+
         } catch (Exception ex) {
             result.correct = false;
             result.errorMessage = ex.getLocalizedMessage();
@@ -158,19 +168,38 @@ public class UserController {
 
     @GetMapping("/formEditable")
     public String FormEditable(Model model, @RequestParam int IdUsuario, @RequestParam(required = false) Integer IdDireccion) {
-        if (IdDireccion == null) { //Editar Alumno
-            UsuarioDireccion usuarioDireccion = new UsuarioDireccion();
-            usuarioDireccion.Direccion = new Direccion();
-            usuarioDireccion.Direccion.setIdDireccion(-1);
-            ResponseEntity<Result<Usuario>> response = restTemplate.exchange(urlBase + "usuarioapi/getbyid/" + IdUsuario,
-                    HttpMethod.GET,
-                    HttpEntity.EMPTY,
-                    new ParameterizedTypeReference<Result<Usuario>>() {
-            });
+        if (IdDireccion == null) { //Editar Usuario
+            Result result = new Result();
+            try {
 
-            model.addAttribute("usuarioDireccion", response.getBody());
+                UsuarioDireccion usuarioDireccion = new UsuarioDireccion();
+                usuarioDireccion.Direccion = new Direccion();
+                usuarioDireccion.Usuario.Roll = new Roll();
+                usuarioDireccion.Usuario = new Usuario();
 
-//            model.addAttribute("rolls", RollDAOImplementation.GetAllJPA().object);
+                ResponseEntity<Result<Usuario>> response = restTemplate.exchange(urlBase + "usuarioapi/getbyid/" + IdUsuario,
+                        HttpMethod.GET,
+                        HttpEntity.EMPTY,
+                        new ParameterizedTypeReference<Result<Usuario>>() {
+                });
+                usuarioDireccion.Usuario = (Usuario) response.getBody().object;
+
+                ResponseEntity<Result<List<Roll>>> responseRoll = restTemplate.exchange(urlBase + "rollapi",
+                        HttpMethod.GET,
+                        HttpEntity.EMPTY,
+                        new ParameterizedTypeReference<Result<List<Roll>>>() {
+                });
+
+                usuarioDireccion.Direccion.setIdDireccion(-1);
+                model.addAttribute("usuarioDireccion", usuarioDireccion);
+                model.addAttribute("rolls", responseRoll.getBody().object);
+
+            } catch (Exception ex) {
+                result.correct = false;
+                result.errorMessage = ex.getLocalizedMessage();
+                result.ex = ex;
+            }
+
         } else if (IdDireccion == 0) { //Agregar dirección
             UsuarioDireccion usuarioDireccion = new UsuarioDireccion();
             usuarioDireccion.Usuario = new Usuario();
@@ -345,8 +374,22 @@ public class UserController {
                 new ParameterizedTypeReference<Result<List<Roll>>>() {
         });
 
+        HttpEntity<Usuario> entity = new HttpEntity<>(usuario);
+        restTemplate.exchange(urlBase + "usuarioapi/busquedaDinamica",
+                HttpMethod.POST,
+                entity,
+                new ParameterizedTypeReference<Result>() {
+        });
+
+        ResponseEntity<Result<List<Usuario>>> responseUsuarios = restTemplate.exchange(urlBase + "usuarioapi/busquedaDinamica",
+                HttpMethod.GET,
+                HttpEntity.EMPTY,
+                new ParameterizedTypeReference<Result<List<Usuario>>>() {
+        });
+
         model.addAttribute("roles", response.getBody().object);
         model.addAttribute("usuarioBusqueda", usuario);
+        model.addAttribute("listaUsuarios", responseUsuarios.getBody().objects);
 
         return "AlumnoIndex";
     }
